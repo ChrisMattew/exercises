@@ -19,12 +19,7 @@ import {
   areItemsValid,
   populate,
   getTotal,
-  populatePosts,
-  map,
-  filter,
-  reduce,
-  some,
-  every
+  populatePosts
 } from './arrays'
 import { usersSimple, products, posts, comments, users } from '../mock'
 
@@ -94,9 +89,7 @@ describe('findBy', () => {
 
 describe('filterBy', () => {
   it('Filters by the specified condition - 1', () => {
-    expect(filterBy(usersSimple, { id: 2 })).toEqual([
-      { id: 2, name: 'Mary', age: 50 }
-    ])
+    expect(filterBy(usersSimple, { id: 2 })).toEqual([{ id: 2, name: 'Mary', age: 50 }])
   })
 
   it('Filters by the specified condition - 2', () => {
@@ -132,10 +125,7 @@ describe('toggleArrayItem', () => {
 describe('removeFromArray', () => {
   it('Removes the item at the specified index', () => {
     expect(
-      removeFromArray(
-        [{ name: 'Lucy' }, { name: 'Igor' }, { name: 'Peter' }],
-        1
-      )
+      removeFromArray([{ name: 'Lucy' }, { name: 'Igor' }, { name: 'Peter' }], 1)
     ).toEqual([{ name: 'Lucy' }, { name: 'Peter' }])
   })
 
@@ -150,9 +140,7 @@ describe('removeFromArray', () => {
 
 describe('mergeArrays', () => {
   it('Merges two arrays', () => {
-    expect(mergeArrays([1, 2, 3, 4], [11, 12, 13])).toEqual([
-      1, 2, 3, 4, 11, 12, 13
-    ])
+    expect(mergeArrays([1, 2, 3, 4], [11, 12, 13])).toEqual([1, 2, 3, 4, 11, 12, 13])
   })
 
   it('Merges more arrays', () => {
@@ -167,8 +155,7 @@ describe('mergeArrays', () => {
         [66, 67, 68]
       )
     ).toEqual([
-      1, 2, 3, 4, 11, 12, 13, 22, 23, 24, 33, 22, 35, 44, 45, 46, 55, 56, 57,
-      66, 67, 68
+      1, 2, 3, 4, 11, 12, 13, 22, 23, 24, 33, 22, 35, 44, 45, 46, 55, 56, 57, 66, 67, 68
     ])
   })
 })
@@ -181,15 +168,13 @@ describe('mergeArraysUnique', () => {
   })
 
   it('Merges two arrays with duplicates', () => {
-    expect(mergeArraysUnique([1, 2, 3, 4], [11, 2, 4])).toEqual([
-      1, 2, 3, 4, 11
-    ])
+    expect(mergeArraysUnique([1, 2, 3, 4], [11, 2, 4])).toEqual([1, 2, 3, 4, 11])
   })
 
   it('Merges more arrays with duplicates', () => {
-    expect(
-      mergeArraysUnique([1, 2, 2, 4], [11, 2, 1], [2, 23, 24], [3, 22, 4])
-    ).toEqual([1, 2, 4, 11, 23, 24, 3, 22])
+    expect(mergeArraysUnique([1, 2, 2, 4], [11, 2, 1], [2, 23, 24], [3, 22, 4])).toEqual([
+      1, 2, 4, 11, 23, 24, 3, 22
+    ])
   })
 })
 
@@ -241,16 +226,16 @@ describe('keyBy', () => {
 
 describe('replaceItemAtIndex', () => {
   it('Replaces the item at the specified index', () => {
-    expect(
-      replaceItemAtIndex(usersSimple, { id: 99, name: 'Carl', age: 33 }, 4)
-    ).toEqual([
-      { id: 1, name: 'Jane', age: 44 },
-      { id: 2, name: 'Mary', age: 50 },
-      { id: 3, name: 'Jane', age: 23 },
-      { id: 4, name: 'Lucy', age: 34 },
-      { id: 99, name: 'Carl', age: 33 },
-      { id: 6, name: 'Vincent', age: 50 }
-    ])
+    expect(replaceItemAtIndex(usersSimple, { id: 99, name: 'Carl', age: 33 }, 4)).toEqual(
+      [
+        { id: 1, name: 'Jane', age: 44 },
+        { id: 2, name: 'Mary', age: 50 },
+        { id: 3, name: 'Jane', age: 23 },
+        { id: 4, name: 'Lucy', age: 34 },
+        { id: 99, name: 'Carl', age: 33 },
+        { id: 6, name: 'Vincent', age: 50 }
+      ]
+    )
   })
 })
 
@@ -267,9 +252,7 @@ describe('addExtraProperties', () => {
 
   it('Adds two properties', () => {
     const originalArray = [{ id: 44 }, { id: 99 }, { id: 100 }]
-    expect(
-      addExtraProperties(originalArray, { extra: true, limit: 1000 })
-    ).toEqual([
+    expect(addExtraProperties(originalArray, { extra: true, limit: 1000 })).toEqual([
       { id: 44, extra: true, limit: 1000 },
       { id: 99, extra: true, limit: 1000 },
       { id: 100, extra: true, limit: 1000 }
@@ -355,7 +338,7 @@ describe('mapTo', () => {
   })
 
   it('Handles a key that does not exist', () => {
-    expect(mapTo(usersSimple, 'city')).toBe(usersSimple)
+    expect(mapTo(usersSimple, 'city')).toStrictEqual(usersSimple)
   })
 })
 
@@ -471,100 +454,5 @@ describe('populatePosts', () => {
       }
     ]
     expect(populatePosts(posts, comments, users)).toEqual(result)
-  })
-})
-
-describe('map', () => {
-  it('Correctly maps an array of numbers', () => {
-    expect(map([1, 2, 3, 4, 5], (n) => n * 2)).toEqual([2, 4, 6, 8, 10])
-  })
-
-  it('Correctly maps an array of objects', () => {
-    expect(
-      map(products, ({ product, price }) => `${product}: ${price}$`)
-    ).toEqual(['P1: 50$', 'P90: 120$', 'P8: 78$', 'P12: 189$', 'P33: 199$'])
-  })
-
-  it('Correcly maps an array taking into account indexes', () => {
-    expect(map([1, 2, 3, 4, 5], (n, i) => n * i)).toEqual([0, 2, 6, 12, 20])
-  })
-})
-
-describe('filter', () => {
-  it('Correctly filters an array of numbers', () => {
-    expect(filter([1, 2, 3, 4, 5], (n) => n % 2 === 0)).toEqual([2, 4])
-  })
-
-  it('Correctly filters an array of objects', () => {
-    expect(filter(usersSimple, ({ age }) => age < 30)).toEqual([
-      { id: 3, name: 'Jane', age: 23 }
-    ])
-  })
-
-  it('Correcly filters an array taking into account indexes', () => {
-    expect(filter([1, 2, 3, 4, 5], (_, i) => i > 0)).toEqual([2, 6, 12, 20])
-  })
-})
-
-describe('some', () => {
-  it('Returns true when at least one element satisfies the condition', () => {
-    expect(
-      some([null, 0, undefined, 'hello', null], (x) => typeof x === 'string')
-    ).toEqual(true)
-  })
-
-  it('Returns false when no element satisfies the condition', () => {
-    expect(some([1, 2, 3], (x) => typeof x === 'string')).toEqual(false)
-  })
-})
-
-describe('every', () => {
-  it('Returns true when all elements satisfy the condition', () => {
-    expect(every([1, 2, 3], (n) => Number.isFinite(n))).toEqual(true)
-  })
-
-  it('Returns false when not all elements satisfy the condition', () => {
-    expect(every(['A', 'B', 3], (x) => typeof x === 'string')).toEqual(false)
-  })
-})
-
-describe('reduce', () => {
-  it('Correctly reduces an array of numbers with an initial value', () => {
-    expect(
-      reduce([1, 2, 3, 4, 5], (acc, n) => acc + n),
-      100
-    ).toEqual(115)
-  })
-
-  it('Correctly reduces an array of numbers without an initial value', () => {
-    expect(reduce([1, 2, 3, 4, 5], (acc, n) => acc + n)).toEqual(15)
-  })
-
-  it('Correctly reduces an array into an object', () => {
-    expect(
-      reduce(
-        [
-          { id: 'A', name: 'B' },
-          { id: 'B', name: 'C' },
-          { id: 'D', name: 'E' }
-        ],
-        (acc, value) => ({ ...acc, [value.id]: value }),
-        {}
-      )
-    ).toEqual({
-      A: { id: 'A', name: 'B' },
-      B: { id: 'B', name: 'C' },
-      C: { id: 'D', name: 'E' }
-    })
-  })
-
-  it('Correctly reduces an array into a string taking into account indexes', () => {
-    expect(
-      reduce(
-        ['A', 'B', 'C', 'D', 'E'],
-        (acc, value, i) => `${acc}${i + 1}. ${value}; `,
-        ''
-      )
-    ).toEqual('1. A; 2. B; 3. C; 4. D; 5. E; ')
   })
 })

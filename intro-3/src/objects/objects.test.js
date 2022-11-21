@@ -1,8 +1,7 @@
-import { geoJSON } from '../mock'
 import {
   cloneObject,
   mergeObjects,
-  setPropery,
+  setProperty,
   toArray,
   filterObject,
   arrayToObject,
@@ -11,10 +10,7 @@ import {
   hasValidProperty,
   normalizeObject,
   getTreeDepth,
-  countTreeLeafNodes,
-  get,
-  createGeoJSON,
-  highlightActiveFeatures
+  countTreeLeafNodes
 } from './objects'
 
 describe('cloneObject', () => {
@@ -48,7 +44,7 @@ describe('mergeObjects', () => {
 describe('setProperty', () => {
   it('Sets the specified property without modyfing the original object', () => {
     const object = { name: 'John', age: 33, address: '5th Avenue' }
-    expect(setPropery(object, ['city', 'Rome'])).toEqual({
+    expect(setProperty(object, ['city', 'Rome'])).toEqual({
       name: 'John',
       age: 33,
       address: '5th Avenue',
@@ -198,28 +194,19 @@ describe('hasValidProperty', () => {
 
   it('Returns true with a valid property - 1', () => {
     expect(
-      hasValidProperty(
-        object,
-        (_, value) => Number.isFinite(value) && value < 5
-      )
+      hasValidProperty(object, (_, value) => Number.isFinite(value) && value < 5)
     ).toEqual(true)
   })
 
   it('Returns true with a valid property - 2', () => {
     expect(
-      hasValidProperty(
-        object,
-        (key, value) => key === 'children' && value.length > 0
-      )
+      hasValidProperty(object, (key, value) => key === 'children' && value.length > 0)
     ).toEqual(true)
   })
 
   it('Returns false with no valid property', () => {
     expect(
-      hasValidProperty(
-        object,
-        (_, value) => Number.isFinite(value) && value > 100
-      )
+      hasValidProperty(object, (_, value) => Number.isFinite(value) && value > 100)
     ).toEqual(false)
   })
 })
@@ -348,157 +335,8 @@ describe('getTreeDepth', () => {
   })
 })
 
-describe('countTreeLeafNodes', () => {
+describe.only('countTreeLeafNodes', () => {
   it('Gets the correct number of leaf nodes', () => {
     expect(countTreeLeafNodes(tree)).toEqual(14)
-  })
-})
-
-describe('get', () => {
-  const object = {
-    name: 'Maria',
-    surname: 'Rossa',
-    address: {
-      cities: ['Roma', 'Milano', 'Torino'],
-      country: { code: 'IT', fullName: 'Italia' },
-      isValid: false
-    }
-  }
-
-  it('Returns a value in simple path', () => {
-    expect(get(object, 'name')).toEqual('Maria')
-  })
-
-  it('Returns a value in a nested path', () => {
-    expect(get(object, 'address.country.fullName')).toEqual('Italia')
-  })
-
-  it('Returns a boolean value in a nested path', () => {
-    expect(get(object, 'address.isValid')).toEqual(false)
-  })
-
-  it('Returns a value in a nested path with arrays', () => {
-    expect(get(object, 'address.cities.1')).toEqual('Milano')
-  })
-
-  it('Returns the fallback value when the path does not exist', () => {
-    expect(get(object, 'movies.favorites', 'NO_RESULT')).toEqual('NO_RESULT')
-  })
-
-  it('Returns the fallback value when the path is partially valid', () => {
-    expect(get(object, 'address.number', 0)).toEqual(0)
-  })
-
-  it('Returns undefined when the path does not exist and no fallback is provided', () => {
-    expect(get(object, 'address.street.0')).toBeUndefined()
-  })
-})
-
-describe('createGeoJSON', () => {
-  it('Creates a valid geoJSON', () => {
-    const input = {
-      pointsOfInterest: [
-        {
-          name: "Fontana dell'Aquila",
-          coordinates: { lat: 46.0677293, lng: 11.1215698 }
-        },
-        {
-          name: 'Fontana del Nettuno',
-          coordinates: { lat: 44.49423, lng: 11.34267 }
-        }
-      ],
-      streets: [
-        {
-          name: 'Via Rodolfo Belenzani',
-          polyline:
-            '[{"id":1,"start":{"lng":11.1214686,"lat":46.0677385},"end":{"lng":11.121466,"lat":46.0677511}},{"id":2,"start":{"lng":11.121466,"lat":46.0677511},"end":{"lng":11.1213806,"lat":46.0681452}},{"id":3,"start":{"lng":11.1213806,"lat":46.0681452},"end":{"lng":11.1213548,"lat":46.0682642}},{"id":4,"start":{"lng":11.1213548,"lat":46.0682642},"end":{"lng":11.1213115,"lat":46.0684385}},{"id":5,"start":{"lng":11.1213115,"lat":46.0684385},"end":{"lng":11.1212897,"lat":46.0685261}},{"id":6,"start":{"lng":11.1212897,"lat":46.0685261},"end":{"lng":11.1212678,"lat":46.0686443}}]',
-          extraProps: {
-            lane: 1
-          }
-        }
-      ]
-    }
-    expect(createGeoJSON(input)).toEqual(geoJSON)
-  })
-})
-
-describe('highlightActiveFeatures', () => {
-  const input = [
-    ['point', [2, 1]],
-    ['point', [4, 3]],
-    [
-      'line',
-      [
-        [1, 2],
-        [3, 2],
-        [5, 4],
-        [6, 5]
-      ]
-    ]
-  ]
-
-  it('Returns null if the point does not intersect anything', () => {
-    expect(highlightActiveFeatures(input, [10, 10])).toBeNull()
-  })
-
-  it('Highlights the right feature with a single intersection', () => {
-    const expected = {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [2, 1] }
-        },
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [4, 3] }
-        },
-        {
-          type: 'Feature',
-          properties: { highlighted: true },
-          geometry: {
-            type: 'LineString',
-            coordinates: [
-              [1, 2],
-              [3, 2],
-              [5, 4],
-              [6, 5]
-            ]
-          }
-        }
-      ]
-    }
-    expect(highlightActiveFeatures(input, [2, 2])).toEqual(expected)
-  })
-
-  it('Highlights the right features with multiple intersections', () => {
-    const expected = {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [2, 1] }
-        },
-        {
-          type: 'Feature',
-          properties: { highlighted: true },
-          geometry: { type: 'Point', coordinates: [4, 3] }
-        },
-        {
-          type: 'Feature',
-          properties: { highlighted: true },
-          geometry: {
-            type: 'LineString',
-            coordinates: [
-              [1, 2],
-              [3, 2],
-              [5, 4],
-              [6, 5]
-            ]
-          }
-        }
-      ]
-    }
-    expect(highlightActiveFeatures(input, [4, 3])).toEqual(expected)
   })
 })
